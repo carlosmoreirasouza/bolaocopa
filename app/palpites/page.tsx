@@ -3,9 +3,26 @@ import { PredictionForm } from "@/components/prediction-form";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+type MatchWithCurrentUserPrediction = {
+  id: string;
+  round: string;
+  homeTeam: string;
+  awayTeam: string;
+  startsAt: Date;
+  status: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  predictions: Array<{
+    id: string;
+    homeScore: number;
+    awayScore: number;
+    points: number;
+  }>;
+};
+
 export default async function PredictionsPage() {
   const user = await getCurrentUser();
-  const matches = await prisma.match.findMany({
+  const matches: MatchWithCurrentUserPrediction[] = await prisma.match.findMany({
     orderBy: [{ startsAt: "asc" }],
     include: { predictions: { where: { userId: user?.id ?? "__anonymous__" } } }
   });

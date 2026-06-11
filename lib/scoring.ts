@@ -1,7 +1,16 @@
-import type { Match, Prediction } from "@prisma/client";
+type Score = {
+  homeScore: number | null;
+  awayScore: number | null;
+};
 
-type Score = Pick<Match, "homeScore" | "awayScore">;
-type Guess = Pick<Prediction, "homeScore" | "awayScore">;
+type Guess = {
+  homeScore: number;
+  awayScore: number;
+};
+
+type PredictionForBonus = Guess & {
+  id: string;
+};
 
 function winner(homeScore: number, awayScore: number) {
   if (homeScore > awayScore) return "HOME";
@@ -31,7 +40,7 @@ export function calculateBasePoints(match: Score, prediction: Guess) {
   };
 }
 
-export function findBonusPredictionIds(match: Score, predictions: Array<Prediction>) {
+export function findBonusPredictionIds(match: Score, predictions: Array<PredictionForBonus>) {
   if (match.homeScore === null || match.awayScore === null || predictions.length === 0) return new Set<string>();
 
   const hasExactHit = predictions.some(

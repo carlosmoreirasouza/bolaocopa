@@ -1,8 +1,21 @@
 import { prisma } from "./prisma";
 import { calculateBasePoints, findBonusPredictionIds } from "./scoring";
 
+type PredictionForRecalculation = {
+  id: string;
+  homeScore: number;
+  awayScore: number;
+};
+
+type FinishedMatchForRecalculation = {
+  homeScore: number | null;
+  awayScore: number | null;
+  status: string;
+  predictions: PredictionForRecalculation[];
+};
+
 export async function recalculateMatchPoints(matchId: string) {
-  const match = await prisma.match.findUnique({
+  const match: FinishedMatchForRecalculation | null = await prisma.match.findUnique({
     where: { id: matchId },
     include: { predictions: true }
   });
@@ -12,7 +25,7 @@ export async function recalculateMatchPoints(matchId: string) {
   const bonusIds = findBonusPredictionIds(match, match.predictions);
 
   await prisma.$transaction(
-    match.predictions.map((prediction) => {
+    match.predictions.map((prediction: PredictionForRecalculation) => {
       const base = calculateBasePoints(match, prediction);
       const bonusPoint = bonusIds.has(prediction.id);
 
