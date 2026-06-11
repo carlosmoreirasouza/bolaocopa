@@ -3,6 +3,8 @@ import { PredictionForm } from "@/components/prediction-form";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 type MatchWithCurrentUserPrediction = {
   id: string;
   round: string;
