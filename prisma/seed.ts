@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma";
 
 const matches = [
   { round: "Rodada 1", homeTeam: "Brasil", awayTeam: "Sérvia", startsAt: "2026-06-14T19:00:00.000Z" },
