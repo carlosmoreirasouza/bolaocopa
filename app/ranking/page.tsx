@@ -1,19 +1,34 @@
 import { prisma } from "@/lib/prisma";
 
+type UserWithPredictions = {
+  id: string;
+  name: string;
+  email: string;
+  predictions: Array<{ points: number }>;
+};
+
+type RankingEntry = {
+  id: string;
+  name: string;
+  email: string;
+  predictions: number;
+  points: number;
+};
+
 export default async function RankingPage() {
-  const users = await prisma.user.findMany({
+  const users: UserWithPredictions[] = await prisma.user.findMany({
     include: { predictions: true }
   });
 
-  const ranking = users
-    .map((user) => ({
+  const ranking: RankingEntry[] = users
+    .map((user: UserWithPredictions) => ({
       id: user.id,
       name: user.name,
       email: user.email,
       predictions: user.predictions.length,
-      points: user.predictions.reduce((total, prediction) => total + prediction.points, 0)
+      points: user.predictions.reduce((total: number, prediction: { points: number }) => total + prediction.points, 0)
     }))
-    .sort((a, b) => b.points - a.points || b.predictions - a.predictions || a.name.localeCompare(b.name));
+    .sort((a: RankingEntry, b: RankingEntry) => b.points - a.points || b.predictions - a.predictions || a.name.localeCompare(b.name));
 
   return (
     <section>
@@ -30,7 +45,7 @@ export default async function RankingPage() {
             </tr>
           </thead>
           <tbody>
-            {ranking.map((user, index) => (
+            {ranking.map((user: RankingEntry, index: number) => (
               <tr key={user.id}>
                 <td>{index + 1}º</td>
                 <td>{user.name}</td>
