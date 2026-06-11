@@ -3,6 +3,21 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+type PredictionWithMatch = {
+  id: string;
+  homeScore: number;
+  awayScore: number;
+  points: number;
+  bonusPoint: boolean;
+  match: {
+    homeTeam: string;
+    awayTeam: string;
+    homeScore: number | null;
+    awayScore: number | null;
+    status: string;
+  };
+};
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
 
@@ -47,7 +62,7 @@ export default async function DashboardPage() {
             </tr>
           </thead>
           <tbody>
-            {predictions.map((prediction) => (
+            {predictions.map((prediction: PredictionWithMatch) => (
               <tr key={prediction.id}>
                 <td>{prediction.match.homeTeam} x {prediction.match.awayTeam}</td>
                 <td>{prediction.homeScore} x {prediction.awayScore}</td>
